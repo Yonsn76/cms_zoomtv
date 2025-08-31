@@ -5,6 +5,7 @@ import { NewsManagement } from './NewsManagement';
 import { ProgrammingManagement } from './ProgrammingManagement';
 import { SettingsManagement } from './SettingsManagement';
 import { AddNewsForm } from './AddNewsForm';
+import { AnunciantesManagement } from './AnunciantesManagement';
 
 export const MainLayout: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -21,6 +22,8 @@ export const MainLayout: React.FC = () => {
         return <AddNewsForm onNavigate={handleNavigate} />;
       case 'news':
         return <NewsManagement onNavigate={handleNavigate} />;
+      case 'anunciantes':
+        return <AnunciantesManagement onNavigate={handleNavigate} />;
       case 'programming':
         return <ProgrammingManagement onNavigate={handleNavigate} />;
       case 'settings':

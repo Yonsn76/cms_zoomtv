@@ -7,8 +7,8 @@ import {
   X,
   Newspaper,
   FileText,
-  Calendar,
-  Bell
+  Bell,
+  Tag
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -28,7 +28,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) =
     { id: 'dashboard', label: 'Panel Principal', icon: Bell },
     { id: 'add-news', label: 'Agregar Noticia', icon: FileText },
     { id: 'news', label: 'Administración de Noticias', icon: Newspaper },
-    { id: 'programming', label: 'Programación', icon: Calendar },
+    { id: 'anunciantes', label: 'Anunciantes', icon: Tag },
     { id: 'settings', label: 'Configuración', icon: Settings },
   ];
 

@@ -4,14 +4,14 @@ import {
   Settings, 
   Eye,
   Edit,
-  Calendar,
   Activity,
   FileText,
-  Loader2
+  Loader2,
+  Tag
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { newsApi, programmingApi } from '../services/zoomTvApi';
+import { newsApi, anunciantesApi } from '../services/zoomTvApi';
 
 import type { News } from '../types/zoomTv';
 
@@ -24,7 +24,7 @@ export const ZoomTvDashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const { themeMode, toggleTheme } = useTheme();
   const [activeSection, setActiveSection] = useState('overview');
   const [recentNews, setRecentNews] = useState<News[]>([]);
-  const [currentProgramming, setCurrentProgramming] = useState<any[]>([]);
+  const [recentAnunciantes, setRecentAnunciantes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,20 +47,19 @@ export const ZoomTvDashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         setRecentNews([]);
       }
 
-      // Load current programming
-      const today = new Date().toLocaleDateString('es-ES', { weekday: 'long' }).toUpperCase();
-      const programmingResponse = await programmingApi.getByDay(today);
-      if (programmingResponse.success) {
-        setCurrentProgramming(programmingResponse.data || []);
+      // Load recent anunciantes
+      const anunciantesResponse = await anunciantesApi.getAll();
+      if (anunciantesResponse.success) {
+        setRecentAnunciantes(anunciantesResponse.data || []);
       } else {
-        console.error('Error loading programming:', programmingResponse.message);
-        setCurrentProgramming([]);
+        console.error('Error loading anunciantes:', anunciantesResponse.message);
+        setRecentAnunciantes([]);
       }
     } catch (error) {
       console.error('Error loading dashboard data:', error);
       setError('Error al conectar con el servidor');
       setRecentNews([]);
-      setCurrentProgramming([]);
+      setRecentAnunciantes([]);
     } finally {
       setLoading(false);
     }
@@ -130,7 +129,7 @@ export const ZoomTvDashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                     <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
                       El <strong>Sistema de Gestión de Contenido (CMS)</strong> de Zoom TV es una plataforma integral 
                       diseñada para administrar todo el contenido de tu canal de televisión digital. 
-                      Permite crear, editar y gestionar noticias, programación y configuraciones 
+                      Permite crear, editar y gestionar noticias, anunciantes y configuraciones 
                       de manera eficiente y profesional.
                     </p>
                     <div className="space-y-2">
@@ -140,7 +139,7 @@ export const ZoomTvDashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Programación automática</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Administración de anunciantes</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
@@ -160,8 +159,8 @@ export const ZoomTvDashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                         <span className="font-semibold text-black dark:text-black">{recentNews.length}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Programas Hoy:</span>
-                        <span className="font-semibold text-black dark:text-black">{currentProgramming.length}</span>
+                        <span className="text-gray-600 dark:text-gray-400">Anunciantes Activos:</span>
+                        <span className="font-semibold text-black dark:text-black">{recentAnunciantes.length}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Usuario Activo:</span>
@@ -172,61 +171,67 @@ export const ZoomTvDashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 </div>
               </div>
 
-              {/* Current Programming */}
+              {/* Recent Anunciantes */}
               <div>
                 <h3 className="text-lg font-semibold text-black dark:text-black mb-4">
-                  Programación de Hoy - {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                  Anunciantes Recientes
                 </h3>
                 
-                {currentProgramming.length === 0 ? (
+                {recentAnunciantes.length === 0 ? (
                   <div className="text-center py-8 glass-effect rounded-xl">
-                    <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <Tag className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-black dark:text-black mb-2">
-                      No hay programación para hoy
+                      No hay anunciantes registrados
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      No se encontraron programas programados para hoy
+                      No se encontraron anunciantes en el sistema
                     </p>
                     <button
-                      onClick={() => handleSectionChange('programming')}
+                      onClick={() => handleSectionChange('anunciantes')}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
                     >
-                      Agregar Programación
+                      Agregar Anunciante
                     </button>
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {currentProgramming.slice(0, 5).map((program, index) => (
-                      <div key={program._id || index} className="flex items-center space-x-4 p-4 glass-effect rounded-lg border border-white/30 dark:border-gray-600/30">
-                        <div 
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: program.color || '#3B82F6' }}
-                        ></div>
+                    {recentAnunciantes.slice(0, 5).map((anunciante, index) => (
+                      <div key={anunciante._id || index} className="flex items-center space-x-4 p-4 glass-effect rounded-lg border border-white/30 dark:border-gray-600/30">
+                        <div className="w-12 h-12 rounded-lg overflow-hidden">
+                          <img 
+                            src={anunciante.imageUrl}
+                            alt={anunciante.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = 'https://via.placeholder.com/48x48?text=Imagen';
+                            }}
+                          />
+                        </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-black dark:text-black">
-                            {program.title}
+                            {anunciante.name}
                           </h4>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {program.description}
+                            {anunciante.description}
                           </p>
                         </div>
                         <div className="text-right">
                           <div className="text-sm font-medium text-black dark:text-black">
-                            {program.startTime} - {program.endTime}
+                            {anunciante.category}
                           </div>
                           <div className="text-xs text-gray-500 dark:text-gray-400">
-                            {program.category} • {program.type}
+                            {anunciante.status} • Prioridad: {anunciante.priority}
                           </div>
                         </div>
                       </div>
                     ))}
-                    {currentProgramming.length > 5 && (
+                    {recentAnunciantes.length > 5 && (
                       <div className="text-center">
                         <button
-                          onClick={() => handleSectionChange('programming')}
+                          onClick={() => handleSectionChange('anunciantes')}
                           className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
                         >
-                          Ver toda la programación ({currentProgramming.length} programas)
+                          Ver todos los anunciantes ({recentAnunciantes.length} anunciantes)
                         </button>
                       </div>
                     )}
@@ -267,15 +272,18 @@ export const ZoomTvDashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {recentNews.map((news) => (
-                      <div key={news._id} className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden">
+                      <div key={news._id} className="flex items-center space-x-4 p-4 glass-effect rounded-lg border border-white/30 dark:border-gray-600/30">
+                        <div className="w-12 h-12 rounded-lg overflow-hidden">
                           {news.imageUrl ? (
                             <img 
                               src={news.imageUrl.startsWith('http') ? news.imageUrl : `https://apizoomtv-production.up.railway.app${news.imageUrl}`}
                               alt={news.title}
                               className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = 'https://via.placeholder.com/48x48?text=Imagen';
+                              }}
                             />
                           ) : (
                             <div className="w-full h-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
@@ -284,35 +292,25 @@ export const ZoomTvDashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                           )}
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-medium text-black dark:text-black line-clamp-2">
+                          <h4 className="font-medium text-black dark:text-black">
                             {news.title}
                           </h4>
-                          <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
-                            <span>{news.author}</span>
-                            <span>{new Date(news.createdAt).toLocaleDateString()}</span>
-                            <span className={`px-2 py-1 rounded-full text-xs ${getCategoryColor(news.category)}`}>
-                              {news.category}
-                            </span>
-                          </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {news.summary}
+                          </p>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {news.views || 0} vistas
-                          </span>
-                          <button className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
-                            <Eye size={16} className="text-gray-500 dark:text-gray-400" />
-                          </button>
-                          <button 
-                            onClick={() => handleSectionChange('news')}
-                            className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
-                          >
-                            <Edit size={16} className="text-gray-500 dark:text-gray-400" />
-                          </button>
+                        <div className="text-right">
+                          <div className="text-sm font-medium text-black dark:text-black">
+                            {news.category}
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            {news.author} • {new Date(news.createdAt).toLocaleDateString()}
+                          </div>
                         </div>
                       </div>
                     ))}
                     {recentNews.length > 5 && (
-                      <div className="text-center mt-4">
+                      <div className="text-center">
                         <button
                           onClick={() => handleSectionChange('news')}
                           className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
