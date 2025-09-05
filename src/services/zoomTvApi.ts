@@ -601,4 +601,121 @@ export const anunciantesApi = {
   }
 };
 
+// API para información de la empresa
+export const companyApi = {
+  // Información de la empresa
+  getInfo: async () => {
+    try {
+      const response = await apiClient.get('/company/info');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching company info:', error);
+      throw error;
+    }
+  },
+
+  updateInfo: async (data: any) => {
+    try {
+      const response = await apiClient.put('/company/info', data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating company info:', error);
+      throw error;
+    }
+  },
+
+  // Miembros del equipo
+  getTeam: async () => {
+    try {
+      const response = await apiClient.get('/company/team');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching team members:', error);
+      throw error;
+    }
+  },
+
+  getTeamMember: async (id: string) => {
+    try {
+      const response = await apiClient.get(`/company/team/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching team member:', error);
+      throw error;
+    }
+  },
+
+  createTeamMember: async (data: any) => {
+    try {
+      const response = await apiClient.post('/company/team', data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating team member:', error);
+      throw error;
+    }
+  },
+
+  updateTeamMember: async (id: string, data: any) => {
+    try {
+      const response = await apiClient.put(`/company/team/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating team member:', error);
+      throw error;
+    }
+  },
+
+  deleteTeamMember: async (id: string) => {
+    try {
+      const response = await apiClient.delete(`/company/team/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting team member:', error);
+      throw error;
+    }
+  },
+
+  // Historia de la empresa
+  getHistory: async () => {
+    try {
+      const response = await apiClient.get('/company/history');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching company history:', error);
+      throw error;
+    }
+  },
+
+  updateHistory: async (data: any) => {
+    try {
+      const response = await apiClient.put('/company/history', data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating company history:', error);
+      throw error;
+    }
+  },
+
+  // Valores de la empresa
+  getValues: async () => {
+    try {
+      const response = await apiClient.get('/company/values');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching company values:', error);
+      throw error;
+    }
+  },
+
+  updateValues: async (data: any) => {
+    try {
+      const response = await apiClient.put('/company/values', data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating company values:', error);
+      throw error;
+    }
+  }
+};
+
 export default apiClient;
