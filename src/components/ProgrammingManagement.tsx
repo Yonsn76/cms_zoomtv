@@ -6,15 +6,12 @@ import {
   Edit, 
   Trash2, 
   Save, 
-  X,
   Play,
-  Pause,
   Eye,
   EyeOff,
   ArrowLeft,
   Loader2
 } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
 import { programmingApi } from '../services/zoomTvApi';
 import type { ProgrammingItem, ProgrammingFormData } from '../services/zoomTvApi';
 
@@ -31,7 +28,6 @@ const TYPES = [
 ];
 
 export const ProgrammingManagement: React.FC<{ onNavigate: (section: string) => void }> = ({ onNavigate }) => {
-  const { themeMode } = useTheme();
   const [programs, setPrograms] = useState<ProgrammingItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

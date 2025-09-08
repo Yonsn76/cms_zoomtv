@@ -1,5 +1,5 @@
 import React from 'react';
-import { Upload, Building2, Calendar, MapPin, Mail, Phone, Globe, Facebook, Instagram, Twitter, Youtube, Linkedin } from 'lucide-react';
+import { Upload, Building2, Mail, Facebook, Instagram, Twitter, Youtube, Linkedin } from 'lucide-react';
 
 interface CompanyInfoFormProps {
   formData: any;
@@ -7,7 +7,7 @@ interface CompanyInfoFormProps {
   loading: boolean;
 }
 
-export const CompanyInfoForm: React.FC<CompanyInfoFormProps> = ({ formData, onFormChange, loading }) => {
+export const CompanyInfoForm: React.FC<CompanyInfoFormProps> = ({ formData, onFormChange }) => {
   return (
     <div className="space-y-6">
       {/* Información Básica */}

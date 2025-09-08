@@ -10,7 +10,8 @@ import {
   Calendar,
   Bell,
   Tag,
-  Building2
+  Building2,
+  Radio
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -32,6 +33,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) =
     { id: 'news', label: 'Administración de Noticias', icon: Newspaper },
     { id: 'anunciantes', label: 'Anunciantes', icon: Tag },
     { id: 'programming', label: 'Programación', icon: Calendar },
+    { id: 'transmisiones', label: 'Transmisiones', icon: Radio },
     { id: 'company', label: 'Gestión de Empresa', icon: Building2 },
     { id: 'settings', label: 'Configuración', icon: Settings },
   ];

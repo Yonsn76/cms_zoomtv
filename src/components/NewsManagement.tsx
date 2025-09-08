@@ -3,32 +3,17 @@ import {
   Plus, 
   Search, 
   Filter, 
-  Eye, 
   Edit, 
   Trash2, 
-  MoreVertical,
-  Calendar,
-  User,
-  Tag,
   Image,
   Save,
   X,
   CheckCircle,
-  XCircle,
   Star,
-  TrendingUp,
-  EyeOff,
-  Archive,
   RefreshCw,
-  Download,
-  Upload,
-  Settings,
   AlertCircle,
-  Check,
-  Clock,
   FileText
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 import { newsApi, type News, type NewsFormData } from '../services/zoomTvApi';
 import type { NewsFilters } from '../types/zoomTv';
 
@@ -52,8 +37,7 @@ const STATUS_OPTIONS = [
   { value: 'archived', label: 'Archivada', color: '#6B7280' }
 ];
 
-export const NewsManagement: React.FC<NewsManagementProps> = ({ onNavigate }) => {
-  const { user } = useAuth();
+export const NewsManagement: React.FC<NewsManagementProps> = () => {
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);

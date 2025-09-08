@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Building2, 
   Users, 
@@ -7,27 +7,16 @@ import {
   Edit, 
   Save, 
   X, 
-  Upload,
   Phone,
   Mail,
   Globe,
   MapPin,
-  Facebook,
-  Instagram,
-  Twitter,
-  Youtube,
-  Linkedin,
   Calendar,
-  Award,
   Target,
   Lightbulb,
-  Shield,
-  Star,
   Plus,
   Trash2
 } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
-import { useAuth } from '../contexts/AuthContext';
 import { companyApi } from '../services/zoomTvApi';
 import { CompanyInfoForm } from './forms/CompanyInfoForm';
 import { TeamMemberForm } from './forms/TeamMemberForm';
@@ -114,10 +103,6 @@ interface CompanyValues {
 }
 
 const CompanyManagement = () => {
-  const { theme } = useTheme();
-  const { user } = useAuth();
-  
-  // Estados principales
   const [activeTab, setActiveTab] = useState<'info' | 'team' | 'history' | 'values'>('info');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -164,7 +149,7 @@ const CompanyManagement = () => {
   };
 
   const handleFormChange = (field: string, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev: any) => ({
       ...prev,
       [field]: value
     }));

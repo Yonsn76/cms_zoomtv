@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { gsap } from 'gsap';
 
 export const useGSAPAnimations = () => {
@@ -87,7 +87,7 @@ export const useGSAPAnimations = () => {
   };
 
   // Animación de entrada para el header
-  const animateHeader = (header: HTMLElement, icon: HTMLElement, title: HTMLElement, subtitle: HTMLElement) => {
+  const animateHeader = (_header: HTMLElement, icon: HTMLElement, title: HTMLElement, subtitle: HTMLElement) => {
     const tl = gsap.timeline();
     
     tl.fromTo(icon, 

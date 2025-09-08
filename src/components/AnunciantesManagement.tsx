@@ -6,8 +6,6 @@ import {
   Eye, 
   EyeOff, 
   Search, 
-  Filter,
-  MoreVertical,
   Calendar,
   Tag,
   Phone,
@@ -21,8 +19,6 @@ import {
   Instagram,
   Twitter
 } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
-import { useAuth } from '../contexts/AuthContext';
 import { anunciantesApi } from '../services/zoomTvApi';
 
 interface Anunciante {
@@ -54,7 +50,7 @@ interface AnunciantesManagementProps {
   onNavigate: (section: string) => void;
 }
 
-export const AnunciantesManagement: React.FC<AnunciantesManagementProps> = ({ onNavigate }) => {
+export const AnunciantesManagement: React.FC<AnunciantesManagementProps> = () => {
   const [anunciantes, setAnunciantes] = useState<Anunciante[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -84,8 +80,6 @@ export const AnunciantesManagement: React.FC<AnunciantesManagementProps> = ({ on
     }
   });
   const [saving, setSaving] = useState(false);
-  const { themeMode } = useTheme();
-  const { user } = useAuth();
 
   // Cargar anunciantes
   const loadAnunciantes = async () => {

@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Newspaper, 
-  Settings, 
-  Eye,
-  Edit,
-  Activity,
   FileText,
   Loader2,
   Tag,
@@ -27,7 +22,6 @@ interface DashboardProps {
 export const ZoomTvDashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const { user } = useAuth();
   const { themeMode, toggleTheme } = useTheme();
-  const [activeSection, setActiveSection] = useState('overview');
   const [recentNews, setRecentNews] = useState<News[]>([]);
   const [recentAnunciantes, setRecentAnunciantes] = useState<any[]>([]);
   const [currentProgramming, setCurrentProgramming] = useState<any[]>([]);
@@ -93,19 +87,7 @@ export const ZoomTvDashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   };
 
   const handleSectionChange = (section: string) => {
-    setActiveSection(section);
     onNavigate(section);
-  };
-
-  const getCategoryColor = (category: string) => {
-    const colors = {
-      actualidad: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
-      deportes: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
-      musica: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300',
-      nacionales: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
-      regionales: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-300'
-    };
-    return colors[category as keyof typeof colors] || colors.actualidad;
   };
 
   if (loading) {

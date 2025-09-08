@@ -7,6 +7,7 @@ import { SettingsManagement } from './SettingsManagement';
 import { AddNewsForm } from './AddNewsForm';
 import { AnunciantesManagement } from './AnunciantesManagement';
 import CompanyManagement from './CompanyManagement';
+import TransmisionesManagement from './TransmisionesManagement';
 
 export const MainLayout: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -27,6 +28,8 @@ export const MainLayout: React.FC = () => {
         return <AnunciantesManagement onNavigate={handleNavigate} />;
       case 'programming':
         return <ProgrammingManagement onNavigate={handleNavigate} />;
+      case 'transmisiones':
+        return <TransmisionesManagement />;
       case 'company':
         return <CompanyManagement />;
       case 'settings':

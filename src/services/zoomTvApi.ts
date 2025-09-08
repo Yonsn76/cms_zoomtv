@@ -718,4 +718,143 @@ export const companyApi = {
   }
 };
 
+// Tipos para transmisiones (actualizados según el modelo del backend)
+export interface Transmision {
+  _id?: string;  // Opcional para compatibilidad
+  id: string;    // Campo principal que devuelve el backend
+  nombre: string;
+  url: string;
+  isActive: boolean;
+  isLive: boolean;
+  createdBy: {
+    _id: string;
+    name: string;
+    email: string;
+  } | null;  // Puede ser null según los logs
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TransmisionFormData {
+  nombre: string;
+  url: string;
+}
+
+export interface TransmisionFilters {
+  category?: string;
+  isLive?: boolean;
+  isActive?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+// API para transmisiones
+export const transmisionesApi = {
+  // Obtener todas las transmisiones
+  getAll: async (filters?: TransmisionFilters, abortSignal?: AbortSignal): Promise<ApiResponse<Transmision[]>> => {
+    try {
+      const params = new URLSearchParams();
+      if (filters?.category) params.append('category', filters.category);
+      if (filters?.isLive !== undefined) params.append('isLive', filters.isLive.toString());
+      if (filters?.isActive !== undefined) params.append('isActive', filters.isActive.toString());
+      if (filters?.page) params.append('page', filters.page.toString());
+      if (filters?.limit) params.append('limit', filters.limit.toString());
+
+      const response = await apiClient.get(`/transmisiones?${params.toString()}`, {
+        signal: abortSignal
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching transmisiones:', error);
+      throw error;
+    }
+  },
+
+  // Obtener transmisión en vivo activa
+  getLive: async (abortSignal?: AbortSignal): Promise<ApiResponse<Transmision | null>> => {
+    try {
+      const response = await apiClient.get('/transmisiones/live', {
+        signal: abortSignal
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching live transmision:', error);
+      throw error;
+    }
+  },
+
+  // Obtener transmisión por ID
+  getById: async (id: string, abortSignal?: AbortSignal): Promise<ApiResponse<Transmision>> => {
+    try {
+      const response = await apiClient.get(`/transmisiones/${id}`, {
+        signal: abortSignal
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching transmision by ID:', error);
+      throw error;
+    }
+  },
+
+  // Crear nueva transmisión
+  create: async (transmisionData: TransmisionFormData, abortSignal?: AbortSignal): Promise<ApiResponse<Transmision>> => {
+    try {
+      const response = await apiClient.post('/transmisiones', transmisionData, {
+        signal: abortSignal
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating transmision:', error);
+      throw error;
+    }
+  },
+
+  // Actualizar transmisión
+  update: async (id: string, transmisionData: Partial<TransmisionFormData>, abortSignal?: AbortSignal): Promise<ApiResponse<Transmision>> => {
+    try {
+      const response = await apiClient.put(`/transmisiones/${id}`, transmisionData, {
+        signal: abortSignal
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating transmision:', error);
+      throw error;
+    }
+  },
+
+
+  // Eliminar transmisión
+  delete: async (id: string): Promise<ApiResponse<void>> => {
+    try {
+      const response = await apiClient.delete(`/transmisiones/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting transmision:', error);
+      throw error;
+    }
+  },
+
+  // Lanzar transmisión en vivo
+  launchLive: async (id: string): Promise<ApiResponse<Transmision>> => {
+    try {
+      const response = await apiClient.put(`/transmisiones/${id}/live`);
+      return response.data;
+    } catch (error) {
+      console.error('Error launching live transmision:', error);
+      throw error;
+    }
+  },
+
+  // Detener transmisión en vivo
+  stopLive: async (id: string): Promise<ApiResponse<Transmision>> => {
+    try {
+      const response = await apiClient.put(`/transmisiones/${id}/stop`);
+      return response.data;
+    } catch (error) {
+      console.error('Error stopping live transmision:', error);
+      throw error;
+    }
+  }
+};
+
 export default apiClient;

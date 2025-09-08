@@ -1,5 +1,5 @@
 import React from 'react';
-import { Upload, User, Mail, Phone, Linkedin, Twitter, Instagram, Plus, X } from 'lucide-react';
+import { Upload, User, Mail, Linkedin, Twitter, Instagram, Plus, X } from 'lucide-react';
 
 interface TeamMemberFormProps {
   formData: any;
@@ -7,7 +7,7 @@ interface TeamMemberFormProps {
   loading: boolean;
 }
 
-export const TeamMemberForm: React.FC<TeamMemberFormProps> = ({ formData, onFormChange, loading }) => {
+export const TeamMemberForm: React.FC<TeamMemberFormProps> = ({ formData, onFormChange }) => {
   const addSkill = () => {
     const currentSkills = formData.skills || [];
     onFormChange('skills', [...currentSkills, '']);

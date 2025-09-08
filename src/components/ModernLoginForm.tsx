@@ -9,7 +9,7 @@ export const ModernLoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+  const [fieldErrors] = useState<{ email?: string; password?: string }>({});
   const { login, loading } = useAuth();
   const { themeMode } = useTheme();
 

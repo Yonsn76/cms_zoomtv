@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { authApi } from '../services/zoomTvApi';
-import type { User, LoginCredentials, AuthResponse, UserRole } from '../types/zoomTv';
+import type { User, LoginCredentials, UserRole } from '../types/zoomTv';
 
 interface AuthState {
   user: User | null;

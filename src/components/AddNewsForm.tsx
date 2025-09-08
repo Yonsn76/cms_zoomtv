@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { 
   FileText, 
-  Upload, 
   X, 
   Save, 
   ArrowLeft,
   Image as ImageIcon
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
 import { newsApi, mediaApi } from '../services/zoomTvApi';
 
 interface AddNewsFormProps {
@@ -43,7 +41,6 @@ const CATEGORIES = [
 
 export const AddNewsForm: React.FC<AddNewsFormProps> = ({ onNavigate, selectedCategory }) => {
   const { user } = useAuth();
-  const { themeMode } = useTheme();
   const [formData, setFormData] = useState<NewsFormData>({
     id: '',
     title: '',

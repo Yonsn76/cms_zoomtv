@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import { 
-  Settings, 
   Save, 
   Globe, 
   Bell, 
   Shield, 
   Palette,
-  Database,
-  Users,
   Mail,
   Lock,
   Monitor,
@@ -48,7 +45,7 @@ interface AppearanceSettings {
   animations: boolean;
 }
 
-export const SettingsManagement: React.FC<SettingsManagementProps> = ({ onNavigate }) => {
+export const SettingsManagement: React.FC<SettingsManagementProps> = () => {
   const [activeTab, setActiveTab] = useState('general');
   const [loading, setLoading] = useState(false);
 
