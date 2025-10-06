@@ -82,8 +82,6 @@ export const SettingsManagement: React.FC<SettingsManagementProps> = () => {
   const handleSave = async (settingsType: string) => {
     setLoading(true);
     try {
-      // Simular guardado
-      await new Promise(resolve => setTimeout(resolve, 1000));
       console.log(`Guardando configuración: ${settingsType}`);
       alert('Configuración guardada exitosamente');
     } catch (error) {

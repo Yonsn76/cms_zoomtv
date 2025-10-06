@@ -507,7 +507,7 @@ export const NewsManagement: React.FC<NewsManagementProps> = () => {
                             <div className="w-12 h-12 glass-effect rounded-lg mr-4 flex items-center justify-center">
                               {item.imageUrl ? (
                                 <img
-                                  src={item.imageUrl.startsWith('http') ? item.imageUrl : `https://apizoomtv-production.up.railway.app${item.imageUrl}`}
+                                  src={item.imageUrl.startsWith('http') ? item.imageUrl : `https://api-zoomtv.onrender.com${item.imageUrl}`}
                                   alt={item.title}
                                   className="w-12 h-12 object-cover rounded-lg"
                                   onError={(e) => {

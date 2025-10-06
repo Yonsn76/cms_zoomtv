@@ -63,7 +63,10 @@ export const ProgrammingManagement: React.FC<{ onNavigate: (section: string) => 
     endTime: '20:00',
     category: 'Noticias',
     type: 'Programa en vivo',
-    color: '#3B82F6'
+    isActive: true,
+    color: '#3B82F6',
+    priority: 1,
+    notes: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -94,7 +97,10 @@ export const ProgrammingManagement: React.FC<{ onNavigate: (section: string) => 
         endTime: '20:00',
         category: 'Noticias',
         type: 'Programa en vivo',
-        color: '#3B82F6'
+        isActive: true,
+        color: '#3B82F6',
+        priority: 1,
+        notes: ''
       });
     } catch (err) {
       console.error('Error saving programming:', err);
@@ -513,6 +519,48 @@ export const ProgrammingManagement: React.FC<{ onNavigate: (section: string) => 
                     Vista previa del color
                   </span>
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Prioridad
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={formData.priority}
+                    onChange={(e) => setFormData({...formData, priority: parseInt(e.target.value) || 1})}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600/30 rounded-lg glass-effect dark:bg-gray-800 text-black dark:text-black focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="1-10"
+                  />
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="isActive"
+                    checked={formData.isActive}
+                    onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label htmlFor="isActive" className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Programa activo
+                  </label>
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Notas adicionales
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                  rows={2}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600/30 rounded-lg glass-effect dark:bg-gray-800 text-black dark:text-black focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Notas adicionales sobre el programa"
+                />
               </div>
 
               {/* Actions */}

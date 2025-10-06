@@ -37,7 +37,7 @@ const TransmisionesManagement = () => {
     setAbortController(controller);
     
     console.log('🚀 Iniciando carga de transmisiones...');
-    loadTransmisiones(0, controller.signal);
+    loadTransmisiones();
     
     // Cleanup: cancelar consultas cuando el componente se desmonte
     return () => {
@@ -46,16 +46,10 @@ const TransmisionesManagement = () => {
     };
   }, []);
 
-  const loadTransmisiones = async (retryCount = 0, abortSignal?: AbortSignal) => {
+  const loadTransmisiones = async () => {
     // Evitar múltiples llamadas simultáneas
     if (isLoadingTransmisiones) {
       console.log('⏸️ Ya hay una carga en progreso, saltando...');
-      return;
-    }
-
-    // Verificar si la consulta fue cancelada
-    if (abortSignal?.aborted) {
-      console.log('🚫 Consulta cancelada antes de ejecutarse');
       return;
     }
 
@@ -63,9 +57,9 @@ const TransmisionesManagement = () => {
       setIsLoadingTransmisiones(true);
       setLoading(true);
       setError(null);
-      console.log('🔄 Cargando transmisiones desde la API...', retryCount > 0 ? `(Intento ${retryCount + 1})` : '');
+      console.log('🔄 Cargando transmisiones desde la API...');
       
-      const response = await transmisionesApi.getAll(undefined, abortSignal);
+      const response = await transmisionesApi.getAll();
       console.log('📡 Respuesta de la API:', response);
       
       if (response.success) {
@@ -112,38 +106,11 @@ const TransmisionesManagement = () => {
         setError(`Error al cargar transmisiones: ${response.message || 'Error desconocido'}`);
       }
     } catch (err: any) {
-      // Verificar si la consulta fue cancelada
-      if (err.name === 'AbortError' || abortSignal?.aborted) {
-        console.log('🚫 Consulta cancelada');
-        return;
-      }
-      
       console.error('❌ Error cargando transmisiones:', err);
-      
-      // Manejo específico para error 429 (Too Many Requests)
-      if (err.response?.status === 429) {
-        if (retryCount < 3) {
-          const delay = Math.pow(2, retryCount) * 1000; // Backoff exponencial: 1s, 2s, 4s
-          console.log(`⏳ Rate limit alcanzado. Reintentando en ${delay}ms...`);
-          setError(`Demasiadas solicitudes. Reintentando en ${delay/1000} segundos...`);
-          
-          setTimeout(() => {
-            if (!abortSignal?.aborted) {
-              loadTransmisiones(retryCount + 1, abortSignal);
-            }
-          }, delay);
-          return;
-        } else {
-          setError('Demasiadas solicitudes. Por favor, espera unos minutos antes de recargar la página.');
-        }
-      } else {
-        setError(`Error al cargar transmisiones: ${err.message || 'Error de conexión'}`);
-      }
+      setError(`Error al cargar transmisiones: ${err.message || 'Error de conexión'}`);
     } finally {
-      if (!abortSignal?.aborted) {
-        setLoading(false);
-        setIsLoadingTransmisiones(false);
-      }
+      setLoading(false);
+      setIsLoadingTransmisiones(false);
     }
   };
 

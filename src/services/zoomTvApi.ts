@@ -1,12 +1,11 @@
 import axios from 'axios';
 
 // Configuración de la API
-const API_BASE_URL = 'https://apizoomtv-production.up.railway.app/api';
+const API_BASE_URL = 'https://api-zoomtv.onrender.com/api';
 
 // Crear instancia de axios con configuración base
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -244,52 +243,75 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface User {
+  _id: string;
+  id: string;
+  username: string;
+  email: string;
+  fullName: string;
+  role: string;
+  permissions: string[];
+  active: boolean;
+  profile?: {
+    firstName?: string;
+    lastName?: string;
+    bio?: string;
+    avatar?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AuthResponse {
   success: boolean;
   token?: string;
-  user?: {
-    id: string;
-    username: string;
-    email: string;
-    fullName: string;
-    role: string;
-    permissions: string[];
-    profile?: {
-      firstName?: string;
-      lastName?: string;
-      bio?: string;
-    };
-  };
+  user?: User;
   message?: string;
 }
 
 export const authApi = {
-  // Login
+  // Login - Usar endpoint /auth/login según documentación
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
     try {
+      console.log('🔍 Iniciando login con email:', credentials.email);
+      
       const response = await apiClient.post('/auth/login', credentials);
+      console.log('📡 Respuesta de login:', response.data);
+      
       return response.data;
-    } catch (error) {
-      console.error('Error logging in:', error);
-      throw error;
+    } catch (error: any) {
+      console.error('❌ Error en login:', error);
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      } else if (error.message) {
+        throw error;
+      } else {
+        throw new Error('Error de conexión con el servidor');
+      }
     }
   },
 
   // Logout
   logout: async (): Promise<ApiResponse<void>> => {
     try {
-      const response = await apiClient.post('/auth/logout');
-      return response.data;
+      // Limpiar token del localStorage
+      localStorage.removeItem('zoomTvToken');
+      localStorage.removeItem('zoomTvUser');
+      
+      return {
+        success: true,
+        message: 'Logout exitoso'
+      };
     } catch (error) {
       console.error('Error logging out:', error);
       throw error;
     }
   },
 
-  // Verificar token
+  // Verificar token - Usar endpoint /auth/me según documentación
   verifyToken: async (): Promise<ApiResponse<any>> => {
     try {
-      const response = await apiClient.get('/auth/verify');
+      const response = await apiClient.get('/auth/me');
       return response.data;
     } catch (error) {
       console.error('Error verifying token:', error);
@@ -396,7 +418,10 @@ export interface ProgrammingFormData {
   endTime: string;
   category: 'Noticias' | 'Música' | 'Cine' | 'Series' | 'Anime' | 'Entretenimiento' | 'Deportes' | 'Documentales' | 'Otros';
   type: 'Programa en vivo' | 'Película' | 'Serie' | 'Música' | 'Anime' | 'Documental' | 'Otros';
+  isActive?: boolean;
   color?: string;
+  priority?: number;
+  notes?: string;
 }
 
 export interface ProgrammingFilters {
@@ -429,7 +454,7 @@ export const programmingApi = {
       if (filters?.isActive !== undefined) params.append('isActive', filters.isActive.toString());
       if (filters?.search) params.append('search', filters.search);
 
-      const response = await apiClient.get(`/programacion?${params.toString()}`);
+      const response = await apiClient.get(`/horario?${params.toString()}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching programming:', error);
@@ -440,7 +465,7 @@ export const programmingApi = {
   // Obtener programación semanal
   getWeekly: async (): Promise<ApiResponse<WeeklySchedule>> => {
     try {
-      const response = await apiClient.get('/programacion/weekly');
+      const response = await apiClient.get('/horario/weekly');
       return response.data;
     } catch (error) {
       console.error('Error fetching weekly programming:', error);
@@ -451,7 +476,7 @@ export const programmingApi = {
   // Obtener programa por ID
   getById: async (id: string): Promise<ApiResponse<ProgrammingItem>> => {
     try {
-      const response = await apiClient.get(`/programacion/${id}`);
+      const response = await apiClient.get(`/horario/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching programming by ID:', error);
@@ -462,18 +487,30 @@ export const programmingApi = {
   // Crear nuevo programa
   create: async (programData: ProgrammingFormData): Promise<ApiResponse<ProgrammingItem>> => {
     try {
-      const response = await apiClient.post('/programacion', programData);
+      console.log('📝 Enviando datos de programación:', programData);
+      const response = await apiClient.post('/horario', programData);
+      console.log('✅ Respuesta exitosa:', response.data);
       return response.data;
-    } catch (error) {
-      console.error('Error creating programming:', error);
-      throw error;
+    } catch (error: any) {
+      console.error('❌ Error creating programming:', error);
+      
+      // Manejo específico de errores
+      if (error.response?.status === 500) {
+        throw new Error('Error interno del servidor. El endpoint de programación no está funcionando correctamente. Contacta al administrador.');
+      } else if (error.response?.status === 400) {
+        throw new Error('Datos inválidos. Verifica que todos los campos estén completos correctamente.');
+      } else if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      } else {
+        throw new Error('Error de conexión con el servidor. Verifica tu conexión a internet.');
+      }
     }
   },
 
   // Actualizar programa
   update: async (id: string, programData: Partial<ProgrammingFormData>): Promise<ApiResponse<ProgrammingItem>> => {
     try {
-      const response = await apiClient.put(`/programacion/${id}`, programData);
+      const response = await apiClient.put(`/horario/${id}`, programData);
       return response.data;
     } catch (error) {
       console.error('Error updating programming:', error);
@@ -484,7 +521,7 @@ export const programmingApi = {
   // Eliminar programa
   delete: async (id: string): Promise<ApiResponse<void>> => {
     try {
-      const response = await apiClient.delete(`/programacion/${id}`);
+      const response = await apiClient.delete(`/horario/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error deleting programming:', error);
@@ -495,7 +532,7 @@ export const programmingApi = {
   // Activar/desactivar programa
   toggleActive: async (id: string): Promise<ApiResponse<ProgrammingItem>> => {
     try {
-      const response = await apiClient.patch(`/programacion/${id}/toggle`);
+      const response = await apiClient.patch(`/horario/${id}/toggle`);
       return response.data;
     } catch (error) {
       console.error('Error toggling programming:', error);
@@ -506,7 +543,7 @@ export const programmingApi = {
   // Obtener programas por día
   getByDay: async (day: string): Promise<ApiResponse<ProgrammingItem[]>> => {
     try {
-      const response = await apiClient.get(`/programacion/day/${day}`);
+      const response = await apiClient.get(`/horario/day/${day}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching programming by day:', error);
@@ -748,10 +785,10 @@ export interface TransmisionFilters {
   limit?: number;
 }
 
-// API para transmisiones
+// API para transmisiones (URL Live)
 export const transmisionesApi = {
   // Obtener todas las transmisiones
-  getAll: async (filters?: TransmisionFilters, abortSignal?: AbortSignal): Promise<ApiResponse<Transmision[]>> => {
+  getAll: async (filters?: TransmisionFilters): Promise<ApiResponse<Transmision[]>> => {
     try {
       const params = new URLSearchParams();
       if (filters?.category) params.append('category', filters.category);
@@ -760,9 +797,7 @@ export const transmisionesApi = {
       if (filters?.page) params.append('page', filters.page.toString());
       if (filters?.limit) params.append('limit', filters.limit.toString());
 
-      const response = await apiClient.get(`/transmisiones?${params.toString()}`, {
-        signal: abortSignal
-      });
+      const response = await apiClient.get(`/urlLive?${params.toString()}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching transmisiones:', error);
@@ -771,11 +806,9 @@ export const transmisionesApi = {
   },
 
   // Obtener transmisión en vivo activa
-  getLive: async (abortSignal?: AbortSignal): Promise<ApiResponse<Transmision | null>> => {
+  getLive: async (): Promise<ApiResponse<Transmision | null>> => {
     try {
-      const response = await apiClient.get('/transmisiones/live', {
-        signal: abortSignal
-      });
+      const response = await apiClient.get('/urlLive/live');
       return response.data;
     } catch (error) {
       console.error('Error fetching live transmision:', error);
@@ -784,11 +817,9 @@ export const transmisionesApi = {
   },
 
   // Obtener transmisión por ID
-  getById: async (id: string, abortSignal?: AbortSignal): Promise<ApiResponse<Transmision>> => {
+  getById: async (id: string): Promise<ApiResponse<Transmision>> => {
     try {
-      const response = await apiClient.get(`/transmisiones/${id}`, {
-        signal: abortSignal
-      });
+      const response = await apiClient.get(`/urlLive/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching transmision by ID:', error);
@@ -797,11 +828,9 @@ export const transmisionesApi = {
   },
 
   // Crear nueva transmisión
-  create: async (transmisionData: TransmisionFormData, abortSignal?: AbortSignal): Promise<ApiResponse<Transmision>> => {
+  create: async (transmisionData: TransmisionFormData): Promise<ApiResponse<Transmision>> => {
     try {
-      const response = await apiClient.post('/transmisiones', transmisionData, {
-        signal: abortSignal
-      });
+      const response = await apiClient.post('/urlLive', transmisionData);
       return response.data;
     } catch (error) {
       console.error('Error creating transmision:', error);
@@ -810,11 +839,9 @@ export const transmisionesApi = {
   },
 
   // Actualizar transmisión
-  update: async (id: string, transmisionData: Partial<TransmisionFormData>, abortSignal?: AbortSignal): Promise<ApiResponse<Transmision>> => {
+  update: async (id: string, transmisionData: Partial<TransmisionFormData>): Promise<ApiResponse<Transmision>> => {
     try {
-      const response = await apiClient.put(`/transmisiones/${id}`, transmisionData, {
-        signal: abortSignal
-      });
+      const response = await apiClient.put(`/urlLive/${id}`, transmisionData);
       return response.data;
     } catch (error) {
       console.error('Error updating transmision:', error);
@@ -826,7 +853,7 @@ export const transmisionesApi = {
   // Eliminar transmisión
   delete: async (id: string): Promise<ApiResponse<void>> => {
     try {
-      const response = await apiClient.delete(`/transmisiones/${id}`);
+      const response = await apiClient.delete(`/urlLive/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error deleting transmision:', error);
@@ -837,7 +864,7 @@ export const transmisionesApi = {
   // Lanzar transmisión en vivo
   launchLive: async (id: string): Promise<ApiResponse<Transmision>> => {
     try {
-      const response = await apiClient.put(`/transmisiones/${id}/live`);
+      const response = await apiClient.put(`/urlLive/${id}/live`);
       return response.data;
     } catch (error) {
       console.error('Error launching live transmision:', error);
@@ -848,7 +875,7 @@ export const transmisionesApi = {
   // Detener transmisión en vivo
   stopLive: async (id: string): Promise<ApiResponse<Transmision>> => {
     try {
-      const response = await apiClient.put(`/transmisiones/${id}/stop`);
+      const response = await apiClient.put(`/urlLive/${id}/stop`);
       return response.data;
     } catch (error) {
       console.error('Error stopping live transmision:', error);

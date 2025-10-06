@@ -404,7 +404,7 @@ export const ZoomTvDashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                         <div className="w-12 h-12 rounded-lg overflow-hidden">
                           {news.imageUrl ? (
                             <img 
-                              src={news.imageUrl.startsWith('http') ? news.imageUrl : `https://apizoomtv-production.up.railway.app${news.imageUrl}`}
+                              src={news.imageUrl.startsWith('http') ? news.imageUrl : `https://api-zoomtv.onrender.com${news.imageUrl}`}
                               alt={news.title}
                               className="w-full h-full object-cover"
                               onError={(e) => {

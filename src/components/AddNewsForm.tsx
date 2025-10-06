@@ -91,7 +91,7 @@ export const AddNewsForm: React.FC<AddNewsFormProps> = ({ onNavigate, selectedCa
           
           if (uploadResponse.success && uploadResponse.data) {
             // Construir la URL completa para la imagen
-            finalImageUrl = `https://apizoomtv-production.up.railway.app${uploadResponse.data.url}`;
+            finalImageUrl = `https://api-zoomtv.onrender.com${uploadResponse.data.url}`;
             console.log('URL final de imagen:', finalImageUrl);
           } else {
             console.error('Respuesta de subida no exitosa:', uploadResponse);
