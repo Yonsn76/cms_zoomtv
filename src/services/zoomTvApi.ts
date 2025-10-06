@@ -11,46 +11,42 @@ const apiClient = axios.create({
   },
 });
 
-// Interceptor para agregar token de autenticación
+// Interceptor para requests (simplificado - todos los endpoints son públicos)
 apiClient.interceptors.request.use(
   (config) => {
-    // Rutas que NO requieren token (públicas)
-    const publicRoutes = ['/auth/login', '/auth/register', '/auth/verify'];
-    const isPublicRoute = publicRoutes.some(route => config.url?.includes(route));
+    console.log('🔄 Request:', config.method?.toUpperCase(), config.url);
     
-    if (isPublicRoute) {
-      console.log('Interceptor - Ruta pública, no se requiere token:', config.url);
-      return config;
-    }
-    
+    // Opcional: agregar token si existe (para futuras implementaciones)
     const token = localStorage.getItem('zoomTvToken');
-    console.log('Interceptor - Token encontrado:', token ? 'Sí' : 'No');
-    console.log('Interceptor - URL:', config.url);
-    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('Interceptor - Token agregado a headers');
-    } else {
-      console.warn('Interceptor - No se encontró token de autenticación para ruta protegida');
+      console.log('🔑 Token agregado a headers');
     }
+    
     return config;
   },
   (error) => {
-    console.error('Interceptor - Error en request:', error);
+    console.error('❌ Error en request:', error);
     return Promise.reject(error);
   }
 );
 
 // Interceptor para manejar errores de respuesta
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('✅ Response:', response.status, response.config.url);
+    return response;
+  },
   (error) => {
+    console.error('❌ Response Error:', error.response?.status, error.config?.url);
+    
+    // Solo limpiar token si hay error 401 (opcional)
     if (error.response?.status === 401) {
-      // Token expirado o inválido
+      console.log('🔓 Token inválido, limpiando localStorage');
       localStorage.removeItem('zoomTvToken');
       localStorage.removeItem('zoomTvUser');
-      window.location.href = '/login';
     }
+    
     return Promise.reject(error);
   }
 );
